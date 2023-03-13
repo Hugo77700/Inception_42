@@ -1,14 +1,12 @@
 FROM debian:buster
 
-RUN sudo apt-get update -y \
-    && sudo apt-get upgrade -y \
-    && sudo apt-get install nginx -y
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install nginx -y
 
-RUN mkdir -p /etc/nginx/ssl \
-    && sudo apt-get install openssl -y \
-    && mkdir -p /var/www/html
-
-RUN openssl req\
+RUN apt-get install openssl -y \
+    && mkdir -p /etc/nginx/ssl \
+    && openssl req\
     -new\
     -nodes\
     -x509\
@@ -17,10 +15,13 @@ RUN openssl req\
     -keyout etc/nginx/ssl/inception.key\
     -subj "/C=FR/ST=IDF/L=PARIS/O=42School/CN=hcherpre.42.fr/UID=hcherpre"
 
-COPY conf/nginx.conf /etc/nginx/conf.d/nginx.conf
+RUN mkdir -p /var/www/html
+RUN chmod 755 /etc/nginx/ssl
 
-RUN chmod -R 755 /var/www/html
-    && chown -R www-data:www-data /var/www/html
+COPY ./conf/nginx.conf /etc/nginx/conf.d/nginx.conf
+
+RUN chmod 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 443
 
